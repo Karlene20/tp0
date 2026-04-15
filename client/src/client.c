@@ -108,18 +108,35 @@ void leer_consola(t_log* logger)
 
 	// ¡No te olvides de liberar las lineas antes de regresar!
 	free(leido);
+
+	
 }
 
 void paquete(int conexion)
 {
 	// Ahora toca lo divertido!
 	char* leido;
-	t_paquete* paquete;
+	t_paquete* paquete = crear_paquete();
 
 	// Leemos y esta vez agregamos las lineas al paquete
+	leido = readline("> ");
+	//log_info(logger, " >> Leí: %s", leido);
 
+	while(strcmp(leido, "") != 0){
+		agregar_a_paquete(paquete, leido, strlen(leido) + 1); //strlen te va a contar el \0, por eso le sumamos 1
+		free(leido);
+		leido = readline("> ");
+		//log_info(logger, " >> Leí: %s", leido);
+	}
 
 	// ¡No te olvides de liberar las líneas y el paquete antes de regresar!
+	free(leido);
+
+	//Enviamos el paquete
+	enviar_paquete(paquete, conexion);
+
+	//Eliminamos el paquete
+	eliminar_paquete(paquete);
 	
 }
 
@@ -129,4 +146,5 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 	  con las funciones de las commons y del TP mencionadas en el enunciado */
 	  log_destroy(logger);
 	  config_destroy(config);
+	  liberar_conexion(conexion);
 }
